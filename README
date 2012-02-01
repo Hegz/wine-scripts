@@ -1,0 +1,32 @@
+This is a small collection of scripts meant to ease the 
+deployment of wine apps on a multi user system.
+
+The scripts are as follows:
+
+launch.sh
+	This script uses rsync to sync the base wine prefix 
+	to a wine prefix local to the user. It will then 
+	link in static content from the Base prefix in 
+	order to reduce the overall wasted disk space. 
+	Feedback to the user is provided in the form of a
+	Zenity dialogue box.
+
+cfg/config
+	Application specific configuration.  Application 
+	Name, local install location, etc..
+
+cfg/run_.sh
+	Used to run an arbitrary wine applcation in the 
+	base prefix, install files and the like.
+
+cfg/winecfg.sh
+	Runs winecfg in the correct prefix.
+	
+cfg/winetricks.sh
+	Gets the most recent version of winetricks from
+	http://winetricks.org and runs it in the correct
+	prefix.
+
+I hope to expand on this small collection of scripts to 
+allow for different versions of wine to be included in an 
+application bottle.
