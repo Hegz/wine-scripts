@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# This is the configuration file for this wine framework
+
+# Set the application Friendly Name
+FRIENDLYNAME="My funtimes windows app of joy"
+
+# set the application name. No Spaces
+APPNAME="myfunapp"
+
+# Set the application path from the root of the prefix
+APPPATH="drive_c/Program Files/My Funtimes App"
+
+# Set the application Executable
+APPEXE="app.exe"
+
+# get the current Directory
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Set the Base prefix Path
+BASEPREFIX="`readlink -f $DIR/../wineprefix/`/"
+
+# Set the User local prefix path
+LOCALPREFIX=$HOME/.wine-$APPNAME
