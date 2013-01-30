@@ -11,12 +11,12 @@ source $DIR/cfg/config
 WINEPREFIX=$LOCALPREFIX
 export WINEPREFIX
 
+WINETMP=$(mktemp -d -tempdir=$WINEPREFIX)
+
 # Get the total number of files to sync
 TotalFiles=`rsync -rl --times --list-only --exclude="$APPPATH" $BASEPREFIX $WINEPREFIX | wc -l`
-echo Totalfiles: $TotalFiles
 
 count=0
-
 (
 	rsync -rl --times --verbose --exclude="$APPPATH" $BASEPREFIX $WINEPREFIX | while read -r line; do
 		let count=$count+1
@@ -28,6 +28,28 @@ count=0
 # Link in the static content
 [ ! -L "$WINEPREFIX/$APPPATH" ] && ln -s $BASEPREFIX/$APPPATH $WINEPREFIX/$APPPATH
 
-#run the application
-wine "$WINEPREFIX/$APPPATH/$APPEXE" &> /dev/null
+mkdir $WINETMP
+cd $WINETMP
 
+#run the application
+wine "$WINEPREFIX/$APPPATH/$APPEXE" | cat & pid=$! 
+
+# Run in the back ground and check for CUPS print files dumpped into the folder 
+`kill -0 $pid &> /dev/null` 
+while [ $? -eq 0 ]; do
+	PRINTS=`find $WINETMP -maxdepth 1 -user $USER | grep CUPS`
+	if [ `echo $PRINTS | grep -c CUPS` -gt 0 ]; then
+		sleep 10
+		for p in $(echo $PRINTS); do
+			PRINTER=`echo $p | sed s/.*CUPS://`
+			cupsdoprint -P $PRINTER -J "$FRIENDLYNAME" $p
+			rm $p
+		done
+	fi
+	sleep 1
+	`kill -0 $pid &> /dev/null` 
+done
+
+wait $pid
+rm $WINETMP
+exit 0
