@@ -5,6 +5,8 @@
 #
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/config
+WINEARCH=win32
+export WINEARCH
 WINEPREFIX=$BASEPREFIX
 export WINEPREFIX
 echo Wineprefix set as $WINEPREFIX
