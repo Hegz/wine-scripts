@@ -8,17 +8,15 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/cfg/config
 #Set the location of the users local prefix
-WINEPREFIX=$LOCALPREFIX
+WINEPREFIX="$LOCALPREFIX"
 export WINEPREFIX
 
-WINETMP=$(mktemp -d -tempdir=$WINEPREFIX)
-
 # Get the total number of files to sync
-TotalFiles=`rsync -rl --times --list-only --exclude="$APPPATH" $BASEPREFIX $WINEPREFIX | wc -l`
+TotalFiles=`rsync -rl --times --list-only --exclude="$APPPATH" "$BASEPREFIX" "$WINEPREFIX" | wc -l`
 
 count=0
 (
-	rsync -rl --times --verbose --exclude="$APPPATH" $BASEPREFIX $WINEPREFIX | while read -r line; do
+	rsync -rl --times --verbose --exclude="$APPPATH" "$BASEPREFIX" "$WINEPREFIX" | while read -r line; do
 		let count=$count+1
 		let percent=($count * 100)/$TotalFiles
 		echo $count
@@ -26,8 +24,9 @@ count=0
 ) | zenity --progress --title "Application Setup" --text "Initalizing $FRIENDLYNAME.  Please be patient." --percentage 0 --auto-close
 
 # Link in the static content
-[ ! -L "$WINEPREFIX/$APPPATH" ] && ln -s $BASEPREFIX/$APPPATH $WINEPREFIX/$APPPATH
+[ ! -L "$WINEPREFIX/$APPPATH" ] && ln -s "$BASEPREFIX/$APPPATH" "$WINEPREFIX/$APPPATH"
 
+WINETMP=$(mktemp -d --tmpdir="$WINEPREFIX")
 mkdir $WINETMP
 cd $WINETMP
 
@@ -51,5 +50,5 @@ while [ $? -eq 0 ]; do
 done
 
 wait $pid
-rm $WINETMP
+rm -rf $WINETMP
 exit 0
