@@ -19,7 +19,7 @@ count=0
 	rsync -rl --times --verbose --exclude="$APPPATH" "$BASEPREFIX" "$WINEPREFIX" | while read -r line; do
 		let count=$count+1
 		let percent=($count * 100)/$TotalFiles
-		echo $count
+		echo $percent
 	done
 ) | zenity --progress --title "Application Setup" --text "Initalizing $FRIENDLYNAME.  Please be patient." --percentage 0 --auto-close
 
